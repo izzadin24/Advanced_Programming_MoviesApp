@@ -223,3 +223,26 @@ elif menu == "🔍 Movie Search Engine":
             c1, c2 = st.columns(2)
             c1.metric("Popularitas", f"{data_film['popularity']:.0f}")
             c2.metric("Jumlah Vote", f"{data_film['vote_count']:,}")
+
+
+# ==========================================
+# 5. EKSPOR DATA UNTUK JAVA
+# ==========================================
+if df is not None:
+    # 1. Olah data (ambil top 100 rating dengan min vote 1000)
+    col_rating = 'vote_average' if 'vote_average' in df.columns else df.columns[2]
+    top_100_java = df[df['vote_count'] >= 1000].sort_values(by=col_rating, ascending=False).head(100)
+
+    # 2. Pilih kolom yang dibutuhkan Java (judul, rating, popularitas)
+    cols_to_export = ['title', 'vote_average', 'popularity']
+
+    # 3. Tentukan path penyimpanan yang BENAR
+    export_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'processed')
+    export_path = os.path.join(export_dir, 'top_100_movies_java.csv')
+
+    # Pastikan folder 'processed' ada
+    os.makedirs(export_dir, exist_ok=True)
+
+    # 4. Simpan ke CSV
+    top_100_java[cols_to_export].to_csv(export_path, index=False)
+    # st.success(f"File CSV untuk Java berhasil dibuat di: {export_path}") # Baris ini bisa dihapus setelah yakin
